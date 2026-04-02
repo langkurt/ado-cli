@@ -48,12 +48,16 @@ Add `--json` to any command for machine-readable JSON output (useful for scripti
 
 ## Installation (global)
 
-`ado` is installed globally via pipx and available system-wide without activating a venv.
+```bash
+pipx install git+https://github.com/langkurt/ado-cli.git
+```
+
+`ado` is then available system-wide without activating a venv.
 
 After making code changes, reinstall:
 
 ```bash
-/opt/homebrew/bin/pipx reinstall ado-cli
+pipx reinstall ado-cli
 ```
 
 ## Development
