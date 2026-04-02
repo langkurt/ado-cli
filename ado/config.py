@@ -5,6 +5,9 @@ from pathlib import Path
 import yaml
 from dotenv import load_dotenv
 
+# Load ~/.ado-cli/.env first (global), then CWD .env (local override)
+_HOME_ENV = Path.home() / ".ado-cli" / ".env"
+load_dotenv(_HOME_ENV)
 load_dotenv()
 
 CONFIG_PATH = Path.home() / ".ado-cli" / "config.yaml"
