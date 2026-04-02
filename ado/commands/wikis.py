@@ -39,8 +39,12 @@ def wikis_page(client: ADOClient, path: str, wiki: str):
         include_content=True,
     )
     if page and page.page:
-        fmt.console.print(f"\n[bold]{path}[/bold]\n")
-        fmt.console.print(page.page.content or "[dim](empty)[/dim]")
+        content = page.page.content or ""
+        if fmt.json_mode:
+            fmt.output_json({"path": path, "content": content})
+        else:
+            fmt.console.print(f"\n[bold]{path}[/bold]\n")
+            fmt.console.print(content or "[dim](empty)[/dim]")
     else:
         fmt.err(f"Page not found: {path}")
 

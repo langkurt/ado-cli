@@ -44,6 +44,7 @@ ado wikis page   <path>       --wiki <id>
 ```
 
 Global flags: `--org <org>` and `-p <project>` override config for any command.
+Add `--json` to any command for machine-readable JSON output (useful for scripting/agents).
 
 ## Development
 

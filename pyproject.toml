@@ -11,6 +11,7 @@ dependencies = [
     "click>=8.1",
     "azure-devops>=7.1.0b4",
     "msrest>=0.7",
+    "urllib3<2",
     "python-dotenv>=1.0",
     "rich>=13.0",
     "pyyaml>=6.0",

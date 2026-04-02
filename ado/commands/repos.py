@@ -99,17 +99,29 @@ def pr_list(client: ADOClient, repo: str, status: str):
 def pr_show(client: ADOClient, pr_id: int, repo: str):
     """Show pull request details."""
     pr: GitPullRequest = client.git.get_pull_request(repo, pr_id, project=client.project)
-    console = fmt.console
-    console.print(f"\n[bold]PR #{pr.pull_request_id}[/bold] · {pr.title}")
-    console.print(f"[dim]Status:[/dim] {pr.status}")
-    console.print(f"[dim]Author:[/dim] {pr.created_by.display_name}")
-    console.print(
+    reviewers = pr.reviewers or []
+    if fmt.json_mode:
+        fmt.output_json({
+            "id": pr.pull_request_id,
+            "title": pr.title,
+            "status": pr.status,
+            "author": pr.created_by.display_name,
+            "source_branch": pr.source_ref_name.replace("refs/heads/", ""),
+            "target_branch": pr.target_ref_name.replace("refs/heads/", ""),
+            "description": pr.description or "",
+            "reviewers": [{"name": r.display_name, "vote": r.vote} for r in reviewers],
+        })
+        return
+    c = fmt.console
+    c.print(f"\n[bold]PR #{pr.pull_request_id}[/bold] · {pr.title}")
+    c.print(f"[dim]Status:[/dim] {pr.status}")
+    c.print(f"[dim]Author:[/dim] {pr.created_by.display_name}")
+    c.print(
         f"[dim]Branch:[/dim] {pr.source_ref_name.replace('refs/heads/', '')} "
         f"→ {pr.target_ref_name.replace('refs/heads/', '')}"
     )
     if pr.description:
-        console.print(f"\n{pr.description}\n")
-    reviewers = pr.reviewers or []
+        c.print(f"\n{pr.description}\n")
     if reviewers:
         fmt.table(
             "Reviewers",

@@ -91,6 +91,19 @@ def pipeline_run(client: ADOClient, pipeline_id: int, branch: str, var: tuple):
 def pipeline_show(client: ADOClient, run_id: int):
     """Show details of a specific run."""
     b = client.build.get_build(project=client.project, build_id=run_id)
+    if fmt.json_mode:
+        fmt.output_json({
+            "id": b.id,
+            "pipeline": b.definition.name,
+            "status": str(b.status),
+            "result": str(b.result) if b.result else None,
+            "branch": (b.source_branch or "").replace("refs/heads/", ""),
+            "trigger": str(b.reason),
+            "started": str(b.start_time)[:16] if b.start_time else None,
+            "finished": str(b.finish_time)[:16] if b.finish_time else None,
+            "url": b.url,
+        })
+        return
     c = fmt.console
     c.print(f"\n[bold]Run #{b.id}[/bold] · {b.definition.name}")
     c.print(f"[dim]Status:[/dim]   {_status(b.status)}")

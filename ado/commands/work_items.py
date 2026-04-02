@@ -66,8 +66,23 @@ def wi_list(client: ADOClient, wi_type: str, assigned_to: str, state: str, limit
 @click.pass_obj
 def wi_show(client: ADOClient, wi_id: int):
     """Show a work item."""
+    import re
     wi = client.work_item_tracking.get_work_item(wi_id)
     f = wi.fields
+    desc_raw = f.get("System.Description") or ""
+    desc = re.sub(r"<[^>]+>", "", desc_raw).strip()
+    if fmt.json_mode:
+        fmt.output_json({
+            "id": wi.id,
+            "type": f.get("System.WorkItemType"),
+            "state": f.get("System.State"),
+            "title": f.get("System.Title"),
+            "assigned_to": _name(f.get("System.AssignedTo")),
+            "area": f.get("System.AreaPath"),
+            "iteration": f.get("System.IterationPath"),
+            "description": desc,
+        })
+        return
     c = fmt.console
     c.print(f"\n[bold]#{wi.id}[/bold] {f.get('System.Title')}")
     c.print(f"[dim]Type:[/dim]        {f.get('System.WorkItemType')}")
@@ -75,11 +90,7 @@ def wi_show(client: ADOClient, wi_id: int):
     c.print(f"[dim]Assigned To:[/dim] {_name(f.get('System.AssignedTo'))}")
     c.print(f"[dim]Area:[/dim]        {f.get('System.AreaPath')}")
     c.print(f"[dim]Iteration:[/dim]   {f.get('System.IterationPath')}")
-    desc = f.get("System.Description") or ""
     if desc:
-        # strip simple HTML tags for terminal
-        import re
-        desc = re.sub(r"<[^>]+>", "", desc).strip()
         c.print(f"\n{desc[:500]}\n")
 
 
