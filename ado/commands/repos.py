@@ -1,5 +1,6 @@
 """ado repos — repository and pull request commands."""
 import click
+from azure.devops.exceptions import AzureDevOpsServiceError
 from azure.devops.v7_1.git.models import (
     GitPullRequest,
     GitPullRequestSearchCriteria,
@@ -63,9 +64,12 @@ def pr_list(client: ADOClient, repo: str, status: str):
         prs = []
         repos = []
         for r in all_repos:
-            batch = client.git.get_pull_requests(r.id, search, project=client.project)
-            prs.extend(batch)
-            repos.extend([r.name] * len(batch))
+            try:
+                batch = client.git.get_pull_requests(r.id, search, project=client.project)
+                prs.extend(batch)
+                repos.extend([r.name] * len(batch))
+            except AzureDevOpsServiceError:
+                pass
 
     if not prs:
         fmt.info("No pull requests found.")

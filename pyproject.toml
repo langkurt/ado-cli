@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-ado = "ado.cli:cli"
+ado = "ado.cli:_main"
 
 [tool.setuptools.packages.find]
 where = ["."]
