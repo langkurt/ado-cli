@@ -46,6 +46,16 @@ ado wikis page   <path>       --wiki <id>
 Global flags: `--org <org>` and `-p <project>` override config for any command.
 Add `--json` to any command for machine-readable JSON output (useful for scripting/agents).
 
+## Installation (global)
+
+`ado` is installed globally via pipx and available system-wide without activating a venv.
+
+After making code changes, reinstall:
+
+```bash
+/opt/homebrew/bin/pipx reinstall ado-cli
+```
+
 ## Development
 
 ```bash
