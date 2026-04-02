@@ -52,7 +52,7 @@ def wikis_page(client: ADOClient, path: str, wiki: str):
 @click.pass_obj
 def wikis_pages(client: ADOClient, wiki: str, path: str, depth: int):
     """List pages in a wiki."""
-    page = client.wiki.get_page_with_tree_level(
+    page = client.wiki.get_page(
         project=client.project,
         wiki_identifier=wiki,
         path=path,
