@@ -53,4 +53,17 @@ def info(msg: str) -> None:
 
 
 def _print_json(data, file=sys.stdout) -> None:
-    print(_json.dumps(data, default=str, indent=2), file=file)
+    print(_json.dumps(_strip_markup(data), default=str, indent=2), file=file)
+
+
+def _strip_markup(obj):
+    """Recursively strip Rich markup tags from strings."""
+    import re
+    _tag = re.compile(r"\[/?[^\]]+\]")
+    if isinstance(obj, str):
+        return _tag.sub("", obj)
+    if isinstance(obj, dict):
+        return {k: _strip_markup(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_strip_markup(i) for i in obj]
+    return obj

@@ -6,12 +6,11 @@ build-backend = "setuptools.build_meta"
 name = "ado-cli"
 version = "0.1.0"
 description = "Azure DevOps CLI for Claude Code"
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 dependencies = [
     "click>=8.1",
     "azure-devops>=7.1.0b4",
     "msrest>=0.7",
-    "urllib3<2",
     "python-dotenv>=1.0",
     "rich>=13.0",
     "pyyaml>=6.0",

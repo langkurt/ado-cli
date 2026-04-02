@@ -1,8 +1,5 @@
 """Thin wrapper around the azure-devops SDK that handles auth + connection."""
-from __future__ import annotations
-
 from functools import cached_property
-from typing import Optional
 
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
@@ -11,7 +8,7 @@ from ado import config
 
 
 class ADOClient:
-    def __init__(self, org: Optional[str] = None, project: Optional[str] = None):
+    def __init__(self, org: str | None = None, project: str | None = None):
         # Store overrides; actual validation deferred to first API call
         self._org_override = org
         self._project_override = project

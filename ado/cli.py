@@ -1,14 +1,5 @@
 """Entry point: builds the CLI and wires up command groups."""
 import sys
-import warnings
-
-# Must suppress before any imports that load urllib3 transitively
-warnings.filterwarnings("ignore", message=".*NotOpenSSL.*")
-try:
-    from urllib3.exceptions import NotOpenSSLWarning
-    warnings.filterwarnings("ignore", category=NotOpenSSLWarning)
-except ImportError:
-    pass
 
 import click
 from azure.devops.exceptions import AzureDevOpsAuthenticationError, AzureDevOpsServiceError
