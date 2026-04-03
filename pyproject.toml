@@ -3,12 +3,13 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ado-cli"
+name = "msskills"
 version = "0.1.0"
-description = "Azure DevOps CLI for Claude Code"
+description = "Microsoft 365 + Azure DevOps CLI tools for Claude Code"
 requires-python = ">=3.13"
 dependencies = [
     "click>=8.1",
+    "requests>=2.31",
     "azure-devops>=7.1.0b4",
     "msrest>=0.7",
     "python-dotenv>=1.0",
@@ -18,7 +19,8 @@ dependencies = [
 
 [project.scripts]
 ado = "ado.cli:_main"
+m365 = "m365.cli:_main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["ado*"]
+include = ["ado*", "m365*"]

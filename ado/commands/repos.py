@@ -45,16 +45,17 @@ def pr_group():
 
 
 @pr_group.command("list")
-@click.option("--repo", "-r", default=None, help="Repository name (default: all)")
+@click.option("--repo", "-r", default=None, help="Repository name (default: all repos)")
 @click.option(
     "--status",
     "-s",
     default="active",
     type=click.Choice(["active", "completed", "abandoned", "all"]),
 )
+@click.option("--author", "-a", default=None, help="Filter by author display name (or 'me')")
 @click.pass_obj
-def pr_list(client: ADOClient, repo: str, status: str):
-    """List pull requests."""
+def pr_list(client: ADOClient, repo: str, status: str, author: str):
+    """List pull requests across all repos or a specific repo."""
     search = GitPullRequestSearchCriteria(status=status)
     if repo:
         prs = client.git.get_pull_requests(repo, search, project=client.project)
@@ -70,6 +71,29 @@ def pr_list(client: ADOClient, repo: str, status: str):
                 repos.extend([r.name] * len(batch))
             except AzureDevOpsServiceError:
                 pass
+
+    # Author filter (post-fetch since ADO API doesn't support it natively)
+    if author and prs:
+        me_names = None
+        if author.lower() == "me":
+            try:
+                me_names = client.core.get_team_members  # fallback: match by display name substring
+            except Exception:
+                pass
+        needle = author.lower()
+        filtered_prs, filtered_repos = [], []
+        for pr, repo_name in zip(prs, repos):
+            creator = pr.created_by.display_name.lower() if pr.created_by else ""
+            if needle == "me":
+                import os
+                me_upn = os.getenv("ADO_USER", "").lower()
+                match = me_upn and me_upn.split("@")[0] in creator
+            else:
+                match = needle in creator
+            if match:
+                filtered_prs.append(pr)
+                filtered_repos.append(repo_name)
+        prs, repos = filtered_prs, filtered_repos
 
     if not prs:
         fmt.info("No pull requests found.")

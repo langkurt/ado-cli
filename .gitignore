@@ -1,11 +1,8 @@
-.env
-__pycache__/
-*.pyc
-*.pyo
 .venv/
-venv/
+__pycache__/
 *.egg-info/
-dist/
+*.pyc
 build/
-.DS_Store
-*.swp
+dist/
+.env
+~/.ms365-cli/

@@ -9,6 +9,7 @@ from ado.client import ADOClient
 from ado.commands.config_cmd import config_group
 from ado.commands.pipelines import pipelines_group
 from ado.commands.repos import repos_group
+from ado.commands.status_cmd import status_cmd
 from ado.commands.wikis import wikis_group
 from ado.commands.work_items import wi_group
 
@@ -50,6 +51,7 @@ cli.add_command(repos_group)
 cli.add_command(pipelines_group)
 cli.add_command(wi_group)
 cli.add_command(wikis_group)
+cli.add_command(status_cmd)
 
 
 if __name__ == "__main__":

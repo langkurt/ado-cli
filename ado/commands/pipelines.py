@@ -12,10 +12,14 @@ def pipelines_group():
 
 
 @pipelines_group.command("list")
+@click.option("--search", default=None, help="Filter by pipeline name keyword")
 @click.pass_obj
-def pipelines_list(client: ADOClient):
+def pipelines_list(client: ADOClient, search: str):
     """List pipeline definitions."""
     defs = client.build.get_definitions(project=client.project)
+    if search:
+        needle = search.lower()
+        defs = [d for d in defs if needle in d.name.lower()]
     fmt.table(
         f"Pipelines · {client.project}",
         ["ID", "Name", "Path", "Queue"],

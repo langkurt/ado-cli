@@ -15,9 +15,11 @@ def wi_group():
 @click.option("--type", "-t", "wi_type", default=None, help="Work item type (Bug, Task, User Story…)")
 @click.option("--assigned-to", "-a", default=None, help="Assigned to (display name or 'me')")
 @click.option("--state", "-s", default=None, help="State filter (Active, Resolved, Closed…)")
+@click.option("--search", default=None, help="Title keyword search")
+@click.option("--area", default=None, help="Area path (partial match, e.g. 'Move Metrics')")
 @click.option("--limit", "-n", default=25, show_default=True)
 @click.pass_obj
-def wi_list(client: ADOClient, wi_type: str, assigned_to: str, state: str, limit: int):
+def wi_list(client: ADOClient, wi_type: str, assigned_to: str, state: str, search: str, area: str, limit: int):
     """List work items via WIQL query."""
     where_parts = [f"[System.TeamProject] = '{client.project}'"]
     if wi_type:
@@ -27,6 +29,10 @@ def wi_list(client: ADOClient, wi_type: str, assigned_to: str, state: str, limit
         where_parts.append(f"[System.AssignedTo] = {name}")
     if state:
         where_parts.append(f"[System.State] = '{state}'")
+    if search:
+        where_parts.append(f"[System.Title] CONTAINS '{search}'")
+    if area:
+        where_parts.append(f"[System.AreaPath] UNDER '{client.project}\\{area}'")
 
     query = (
         "SELECT [System.Id], [System.Title], [System.WorkItemType], "
