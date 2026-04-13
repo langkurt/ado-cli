@@ -107,8 +107,9 @@ def wi_show(client: ADOClient, wi_id: int):
 @click.option("--assigned-to", "-a", default=None)
 @click.option("--area", default=None)
 @click.option("--iteration", default=None)
+@click.option("--parent", "-p", "parent_id", default=None, type=int, help="Parent work item ID")
 @click.pass_obj
-def wi_create(client: ADOClient, wi_type: str, title: str, description: str, assigned_to: str, area: str, iteration: str):
+def wi_create(client: ADOClient, wi_type: str, title: str, description: str, assigned_to: str, area: str, iteration: str, parent_id: int):
     """Create a work item."""
     ops = [
         _patch("/fields/System.Title", title),
@@ -121,6 +122,8 @@ def wi_create(client: ADOClient, wi_type: str, title: str, description: str, ass
         ops.append(_patch("/fields/System.AreaPath", area))
     if iteration:
         ops.append(_patch("/fields/System.IterationPath", iteration))
+    if parent_id:
+        ops.append(_relation_patch(client, parent_id))
 
     wi = client.work_item_tracking.create_work_item(
         document=ops,
@@ -128,6 +131,17 @@ def wi_create(client: ADOClient, wi_type: str, title: str, description: str, ass
         type=wi_type,
     )
     fmt.ok(f"Created #{wi.id}: {wi.fields.get('System.Title')}")
+
+
+@wi_group.command("link")
+@click.argument("wi_id", type=int)
+@click.option("--parent", "-p", "parent_id", required=True, type=int, help="Parent work item ID")
+@click.pass_obj
+def wi_link(client: ADOClient, wi_id: int, parent_id: int):
+    """Set the parent of an existing work item."""
+    ops = [_relation_patch(client, parent_id)]
+    client.work_item_tracking.update_work_item(document=ops, id=wi_id)
+    fmt.ok(f"Linked #{wi_id} → parent #{parent_id}")
 
 
 @wi_group.command("update")
@@ -154,6 +168,19 @@ def wi_update(client: ADOClient, wi_id: int, title: str, state: str, assigned_to
 
 def _patch(path: str, value) -> JsonPatchOperation:
     return JsonPatchOperation(op="add", path=path, value=value)
+
+
+def _relation_patch(client: ADOClient, parent_id: int) -> JsonPatchOperation:
+    org_url = f"https://dev.azure.com/{client.org}"
+    return JsonPatchOperation(
+        op="add",
+        path="/relations/-",
+        value={
+            "rel": "System.LinkTypes.Hierarchy-Reverse",
+            "url": f"{org_url}/_apis/wit/workItems/{parent_id}",
+            "attributes": {},
+        },
+    )
 
 
 def _name(field) -> str:
